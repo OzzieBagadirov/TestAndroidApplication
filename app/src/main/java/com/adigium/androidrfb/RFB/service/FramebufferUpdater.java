@@ -1,6 +1,7 @@
 package com.adigium.androidrfb.RFB.service;
 
 import android.media.Image;
+import android.util.Log;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -31,12 +32,13 @@ import com.adigium.androidrfb.RFB.screen.ScreenCapture;
  * @author igor.delac@gmail.com
  *
  */
-class FramebufferUpdater implements Runnable {
+public class FramebufferUpdater implements Runnable {
 
 	/**
 	 * Delay in millisec. which prevents framebuffer update flooding.
 	 */
-	public static final long DELAY = 100;
+	public static final long DELAY = 1;
+	public static int imageReady = 0;
 	
 	/**
 	 * Output stream where to write frame buffer updates.
@@ -226,23 +228,24 @@ class FramebufferUpdater implements Runnable {
 				//
 				// Wait for frame buffer update request message.
 				//
-				
+
 				final FramebufferUpdateRequest updateRequest = this.updateRequests.poll(DELAY, TimeUnit.MILLISECONDS);
 
 				// Here be careful to check updateRequest object against null value,
 				//  since frame buffer updater thread is started in parallel with client handler thread.
 				if (updateRequest == null) {
-				
+//					Log.d("FramebufferUpdater", "Null");
 					continue; // go back, and wait again for update request.
 				}
 				
-				if (this.loadingState == true) {
+				if (this.loadingState == false) {
+					Log.d("FramebufferUpdater", "Loading state");
 
 					//
 					// On first message, welcome VNC client with 'Loading ...' splash screen.
 					//
 										
-					this.framebufferUpdateLoading();
+//					this.framebufferUpdateLoading();
 
 					this.loadingState = false;
 					
@@ -250,6 +253,7 @@ class FramebufferUpdater implements Runnable {
 				}
 				else if (this.richCursorSent == false &&
 						SelectEncoder.containsEncoding(Encodings.RICH_CURSOR, this.clientEncodings) == true) {
+					Log.d("FramebufferUpdater", "Rich cursor sent");
 					
 					//
 					// Here is routine to send rich cursor data, which is available if pixel format is set to 32-bit.
@@ -260,19 +264,21 @@ class FramebufferUpdater implements Runnable {
 					this.richCursorSent = true;
 				}
 				else {
-
 					//
 					// Now create new frame buffer update message, and write to socket.
 					//
-					
-					boolean updated = this.framebufferUpdate(updateRequest);
-				
-					// It might happen that method returns false, if screen image did not change.
-					if (updated == false) {
-					
-						// Put back frame buffer update request in queue.
-						// Take it again after DELAY time period.
-						this.updateRequests.put(updateRequest);
+					try {
+						boolean updated = this.framebufferUpdate(updateRequest);
+
+						// It might happen that method returns false, if screen image did not change.
+						if (updated == false) {
+
+							// Put back frame buffer update request in queue.
+							// Take it again after DELAY time period.
+							this.updateRequests.put(updateRequest);
+						}
+					} catch (Exception e) {
+						Log.e("FramebufferUpdater", "Exception ", e);
 					}
 				}				
 						
@@ -298,6 +304,10 @@ class FramebufferUpdater implements Runnable {
 		return ScreenCapture.getScreenshot();
 
 	}
+
+	public static void imageReady() {
+		imageReady += 1;
+	}
 	
 	/**
 	 * Get part of screen image that has changed.
@@ -307,40 +317,44 @@ class FramebufferUpdater implements Runnable {
 	 * @return	{@link List} of {@link Tile} objects that are changed comparing to last invocation
 	 */
 	private List<Tile> getChangedTiles() {
-		
+
 		final TrueColorImage image = getScreenImage();
-		
-		if (this.lastImage == null) {
-					
-			this.lastImage = Tile.build(image.raw, image.width, image.height);
-			
-			return this.lastImage;
-		}
-		
-		final List<Tile> newImage = Tile.build(image.raw, image.width, image.height);
-		
-		if (newImage.size() != this.lastImage.size()) {
-		
-			this.lastImage = newImage;
-			
-			return this.lastImage;
-		}
-		
-		final List<Tile> result = new ArrayList<>();
-		
-		for (int index = 0 ; index < newImage.size() ; index++) {
-		
-			if (this.lastImage.get(index).equals(newImage.get(index)) == false) {
-				
-				// Found tile that's changed.
-				result.add(newImage.get(index));
+
+		if (image != null) {
+			if (this.lastImage == null) {
+
+				this.lastImage = Tile.build(image.raw, image.width, image.height);
+
+				return this.lastImage;
 			}
+
+			final List<Tile> newImage = Tile.build(image.raw, image.width, image.height);
+
+			if (newImage.size() != this.lastImage.size()) {
+
+				this.lastImage = newImage;
+
+				return this.lastImage;
+			}
+
+			final List<Tile> result = new ArrayList<>();
+
+			for (int index = 0; index < newImage.size(); index++) {
+
+				if (this.lastImage.get(index).equals(newImage.get(index)) == false) {
+
+					// Found tile that's changed.
+					result.add(newImage.get(index));
+				}
+			}
+
+			// Update reference with current screen image.
+			this.lastImage = newImage;
+
+			return result;
+		} else {
+			return new ArrayList<Tile>();
 		}
-		
-		// Update reference with current screen image.
-		this.lastImage = newImage;
-		
-		return result;
 	}
 	
 	/**

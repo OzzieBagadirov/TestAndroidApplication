@@ -44,12 +44,18 @@ class InAppInputManager(context: Context?) :
     fun onMouseEvent(buttonMask: Int, x: Int, y: Int) {
         if (!button1Pressed && buttonMask and 1 != 0) {
             injectTouchEvent(1, MotionEvent.ACTION_DOWN, x, y)
+//            Log.d("InputManager", "Button 1 Pressed")
             button1Pressed = true
         } else if (button1Pressed) {
             if (buttonMask and 1 == 0) {
                 injectTouchEvent(1, MotionEvent.ACTION_UP, x, y)
+//                Log.d("InputManager", "Button 1 Released")
                 button1Pressed = false
-            } else injectTouchEvent(1, MotionEvent.ACTION_MOVE, x, y)
+            } else {
+                injectTouchEvent(1, MotionEvent.ACTION_MOVE, x, y)
+//                Log.d("InputManager", "Button 1 Moved")
+            }
+
         }
     }
 

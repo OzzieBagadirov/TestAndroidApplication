@@ -225,7 +225,11 @@ class ClientHandler implements Runnable {
 				//
 				
 				int msgType = in.read();
-				
+
+				if (msgType != 5) {
+					Log.d("ClientHandler", String.valueOf(msgType));
+				}
+
 				if (msgType == EOF) {
 					
 					break;					

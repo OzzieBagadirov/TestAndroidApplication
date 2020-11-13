@@ -1,11 +1,13 @@
 package com.adigium.androidrfb.RFB.encoding;
 
+import android.content.Context;
 import android.util.Log;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import com.adigium.androidrfb.R;
 import com.adigium.androidrfb.RFB.screen.LoadingResource;
 import com.adigium.androidrfb.RFB.service.SetPixelFormat;
 
@@ -21,6 +23,7 @@ import com.adigium.androidrfb.RFB.service.SetPixelFormat;
  *
  */
 public class RichCursorEncoder implements EncodingInterface {
+	public static Context context;
 
 	/**
 	 * Return cursor pixels and bitmask, or null value if resource files are not on class path.
@@ -30,11 +33,11 @@ public class RichCursorEncoder implements EncodingInterface {
 		
 		try {
 			
-			final String bitmaskName = "cursorEncodingBitmask.raw"
-					, pixelName = "cursorEncodingPixels.raw";
+			final String bitmaskName = "cursor_encoding_bitmask.raw"
+					, pixelName = "cursor_encoding_pixels.raw";
 			
-			final InputStream inputStream1 = 
-					LoadingResource.class.getClassLoader().getResourceAsStream(pixelName);
+			final InputStream inputStream1 =
+					context.getResources().openRawResource(R.raw.cursor_encoding_pixels);
 			
 			if (inputStream1 == null) {
 				
@@ -43,8 +46,8 @@ public class RichCursorEncoder implements EncodingInterface {
 				return null;
 			}
 	
-			final InputStream inputStream2 = 
-					LoadingResource.class.getClassLoader().getResourceAsStream(bitmaskName);
+			final InputStream inputStream2 =
+					context.getResources().openRawResource(R.raw.cursor_encoding_bitmask);
 			
 			if (inputStream2 == null) {
 				

@@ -2,9 +2,14 @@ package com.adigium.androidrfb.RFB.screen;
 
 import android.media.Image;
 import android.media.ImageReader;
+import android.util.Log;
 
 import com.adigium.androidrfb.InAppInputManager;
 import com.adigium.androidrfb.RFB.image.TrueColorImage;
+import com.adigium.androidrfb.RFB.service.FramebufferUpdater;
+
+import java.nio.IntBuffer;
+import java.util.Arrays;
 
 /**
  * Java routines to capture current screen.
@@ -34,11 +39,39 @@ public class ScreenCapture {
 //
 //		final Rectangle screenRect = new Rectangle(x, y, width, height);
 //		final BufferedImage colorImage = robot.createScreenCapture(screenRect);
-		//TODO: RECEIVING IMAGE FROM ANDROID DEVICE
-		Image image = imageReader.acquireLatestImage();
-		int[] colorImageBuffer = image.getPlanes()[0].getBuffer().asIntBuffer().array();
+		Image image = null;
+		int[] arrayBuffer = null;
+		int width = 0;
+		int height = 0;
+		try {
+			if (FramebufferUpdater.imageReady - 1 >= 0) {
+				image = imageReader.acquireLatestImage();
+				if (image != null) {
+					width = image.getWidth();
+					height = image.getHeight();
+					IntBuffer colorImageBuffer = image.getPlanes()[0].getBuffer().asIntBuffer();
 
-	    return new TrueColorImage(colorImageBuffer, image.getWidth(), image.getHeight());
+					try {
+						image.close();
+					} catch (IllegalStateException e) {
+						Log.w("ScreenCapture", "Image already closed");
+					}
+					Log.d("ImageReader", "Image taken. Images now: " + FramebufferUpdater.imageReady);
+					FramebufferUpdater.imageReady -= 1;
+
+					arrayBuffer = new int[colorImageBuffer.limit()];
+					colorImageBuffer.get(arrayBuffer);
+
+					Log.d("ScreenCapture", Arrays.toString(arrayBuffer));
+				} else return null;
+			} else {
+				return null;
+			}
+		} catch (Exception e) {
+			Log.e("ScreenCapture", "Error: ", e);
+		}
+
+		return new TrueColorImage(arrayBuffer, width, height);
 	}
 	
 	/**

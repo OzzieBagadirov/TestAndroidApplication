@@ -19,8 +19,10 @@ import android.util.DisplayMetrics
 import android.util.Log
 import android.view.Display
 import androidx.core.content.ContextCompat.getSystemService
+import com.adigium.androidrfb.RFB.encoding.RichCursorEncoder
 import com.adigium.androidrfb.RFB.mouse.MouseController
 import com.adigium.androidrfb.RFB.screen.ScreenCapture
+import com.adigium.androidrfb.RFB.service.FramebufferUpdater
 import com.adigium.androidrfb.RFB.service.RFBService
 
 class RemoteControl() {
@@ -53,6 +55,7 @@ class RemoteControl() {
         rfbService = RFBService()
         inputManager = InAppInputManager(context)
         MouseController.inputManager = inputManager
+        RichCursorEncoder.context = context
     }
 
     fun start(activity: Activity, requestCode: Int) {
@@ -132,7 +135,8 @@ class RemoteControl() {
 
     inner class ImageAvailableListener : OnImageAvailableListener {
         override fun onImageAvailable(reader: ImageReader) {
-//            vncServer!!.imageReady()
+            FramebufferUpdater.imageReady()
+            Log.d("ImageReader", "New image available. Images now: " + FramebufferUpdater.imageReady)
         }
     }
 
@@ -180,7 +184,7 @@ class RemoteControl() {
             DisplayManager.VIRTUAL_DISPLAY_FLAG_OWN_CONTENT_ONLY or DisplayManager.VIRTUAL_DISPLAY_FLAG_PUBLIC
 
         // run capture reader
-        imageReader = ImageReader.newInstance(width, height, ImageFormat.RGB_565, 2)
+        imageReader = ImageReader.newInstance(width, height, PixelFormat.RGBA_8888, 10)
         setImageReader()
         virtualDisplay = mediaProjection!!.createVirtualDisplay(
             "cvio",
