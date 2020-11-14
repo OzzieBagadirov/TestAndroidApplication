@@ -63,7 +63,7 @@ public class SetPixelFormat {
 	 */
 	public SetPixelFormat() {
 		
-		this.bitsPerPixel = (byte)8; //TODO: MAKE THIS CLASS CONNECTED TO THE ImageFormat;
+		this.bitsPerPixel = (byte)8;
 		this.depth = bitsPerPixel;
 		this.bigEndianFlag = 0;
 		this.trueColorFlag = 1;

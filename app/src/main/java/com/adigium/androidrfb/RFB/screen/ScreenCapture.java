@@ -34,11 +34,6 @@ public class ScreenCapture {
 	public static ImageReader imageReader;
 
 	public static TrueColorImage getScreenshot() {
-
-//		final Robot robot = new Robot();
-//
-//		final Rectangle screenRect = new Rectangle(x, y, width, height);
-//		final BufferedImage colorImage = robot.createScreenCapture(screenRect);
 		Image image = null;
 		int[] arrayBuffer = null;
 		int width = 0;
@@ -46,6 +41,8 @@ public class ScreenCapture {
 		try {
 			if (FramebufferUpdater.imageReady - 1 >= 0) {
 				image = imageReader.acquireLatestImage();
+				FramebufferUpdater.imageReady -= 1;
+				Log.d("ImageReader", "Image taken. Images now: " + FramebufferUpdater.imageReady);
 				if (image != null) {
 					width = image.getWidth();
 					height = image.getHeight();
@@ -56,33 +53,18 @@ public class ScreenCapture {
 					} catch (IllegalStateException e) {
 						Log.w("ScreenCapture", "Image already closed");
 					}
-					Log.d("ImageReader", "Image taken. Images now: " + FramebufferUpdater.imageReady);
-					FramebufferUpdater.imageReady -= 1;
 
 					arrayBuffer = new int[colorImageBuffer.limit()];
 					colorImageBuffer.get(arrayBuffer);
-
-					Log.d("ScreenCapture", Arrays.toString(arrayBuffer));
-				} else return null;
-			} else {
-				return null;
-			}
+				} else {
+					FramebufferUpdater.imageReady = 0;
+					return null;
+				}
+			} else return null;
 		} catch (Exception e) {
 			Log.e("ScreenCapture", "Error: ", e);
 		}
 
 		return new TrueColorImage(arrayBuffer, width, height);
 	}
-	
-	/**
-	 * This method will fill image buffer with complete screen (primary screen).
-	 * Buffer is always filled with ARGB values (32-bit).
-	 * 
-	 * @return	{@link TrueColorImage} which contains array of int's representing pixels of current screen
-	 * 
-	 * @throws AWTException	if running in headless mode, eg. without X11, or any display 
-	 */
-//	public static TrueColorImage getScreenshot() throws AWTException {
-//		return getScreenshot();
-//	}
 }

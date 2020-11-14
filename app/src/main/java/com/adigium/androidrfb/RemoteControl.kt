@@ -106,6 +106,8 @@ class RemoteControl() {
     fun onActivityResult(activity: Activity, resultCode: Int, data: Intent?) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             activity.startForegroundService(data!!)
+        } else {
+//            activity.startService(data!!)
         }
         mediaProjection = projectionManager!!.getMediaProjection(resultCode, data!!)
         if (mediaProjection != null) {
@@ -184,7 +186,7 @@ class RemoteControl() {
             DisplayManager.VIRTUAL_DISPLAY_FLAG_OWN_CONTENT_ONLY or DisplayManager.VIRTUAL_DISPLAY_FLAG_PUBLIC
 
         // run capture reader
-        imageReader = ImageReader.newInstance(width, height, PixelFormat.RGBA_8888, 10)
+        imageReader = ImageReader.newInstance(width, height, PixelFormat.RGBA_8888, 2)
         setImageReader()
         virtualDisplay = mediaProjection!!.createVirtualDisplay(
             "cvio",
@@ -196,6 +198,7 @@ class RemoteControl() {
             null,
             handler
         )
+
         imageReader!!.setOnImageAvailableListener(ImageAvailableListener(), handler)
     }
 

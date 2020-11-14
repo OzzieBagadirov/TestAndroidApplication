@@ -229,7 +229,7 @@ public class FramebufferUpdater implements Runnable {
 				// Wait for frame buffer update request message.
 				//
 
-				final FramebufferUpdateRequest updateRequest = this.updateRequests.poll(DELAY, TimeUnit.MILLISECONDS);
+				final FramebufferUpdateRequest updateRequest = this.updateRequests.poll(DELAY, TimeUnit.MICROSECONDS);
 
 				// Here be careful to check updateRequest object against null value,
 				//  since frame buffer updater thread is started in parallel with client handler thread.
@@ -282,7 +282,7 @@ public class FramebufferUpdater implements Runnable {
 					}
 				}				
 						
-				TimeUnit.MILLISECONDS.sleep(DELAY);
+				TimeUnit.MICROSECONDS.sleep(DELAY);
 			}
 		}
 		catch (final Exception exception) {
