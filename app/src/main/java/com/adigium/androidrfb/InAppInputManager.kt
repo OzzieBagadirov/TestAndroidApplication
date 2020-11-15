@@ -1,15 +1,11 @@
 package com.adigium.androidrfb
 
 import android.R
-import android.accessibilityservice.AccessibilityService
 import android.app.*
 import android.app.Application.ActivityLifecycleCallbacks
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
-import android.hardware.input.InputManager
-import android.media.AudioAttributes
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
@@ -20,7 +16,6 @@ import android.view.MotionEvent
 import android.view.MotionEvent.PointerCoords
 import android.view.MotionEvent.PointerProperties
 import android.view.View
-import android.view.accessibility.AccessibilityManager
 import androidx.core.app.NotificationCompat
 import java.lang.ref.WeakReference
 import java.util.*
@@ -52,57 +47,64 @@ class InAppInputManager(context: Context) :
         }
     }
 
-    fun onMouseEvent(buttonMask: Int, x: Int, y: Int) {
-        Log.d("InAppInputManager", "x = $x; y = $y")
+    fun onMouseEvent(buttonMask: Int, x: Int, y: Int): Boolean {
         if (!button1Pressed && buttonMask and 1 != 0) {
             injectTouchEvent(1, MotionEvent.ACTION_DOWN, x, y)
-//            Log.d("InputManager", "Button 1 Pressed")
             button1Pressed = true
+            return true
         } else if (button1Pressed) {
             if (buttonMask and 1 == 0) {
                 injectTouchEvent(1, MotionEvent.ACTION_UP, x, y)
-//                Log.d("InputManager", "Button 1 Released")
                 button1Pressed = false
+                return true
             } else {
                 injectTouchEvent(1, MotionEvent.ACTION_MOVE, x, y)
-//                Log.d("InputManager", "Button 1 Moved")
+                return true
             }
-
         }
+        return false
     }
 
     private fun injectTouchEvent(buttonId: Int, event: Int, x: Int, y: Int) {
-        val view = obtainTargetView() ?: return
-        val activity = obtainActivity() ?: return
-        val viewLocation = IntArray(2)
-        view.getLocationOnScreen(viewLocation)
-        val pp = PointerProperties()
-        pp.toolType = MotionEvent.TOOL_TYPE_FINGER
-        pp.id = 0
-        val pps = arrayOf(pp)
+        Log.d("MouseController", "Starting InjectTouchEvent")
+//        val view = obtainTargetView() ?: return
+//        val activity = obtainActivity() ?: return
+//        val viewLocation = IntArray(2)
+//        view.getLocationOnScreen(viewLocation)
+        val pointerProperties = PointerProperties()
+        pointerProperties.toolType = MotionEvent.TOOL_TYPE_FINGER
+        pointerProperties.id = 0
+        val arrayOfPointerProperties = arrayOf(pointerProperties)
         val pc = PointerCoords()
         pc.size = 1f
         pc.pressure = 1f
-        pc.x = x - viewLocation[0].toFloat()
-        pc.y = y - viewLocation[1].toFloat()
+        pc.x = x.toFloat() //- viewLocation[0].toFloat()
+        pc.y = y.toFloat() //- viewLocation[1].toFloat()
+//        Log.d("MouseController", "IntArray: [${viewLocation[0]}, ${viewLocation[1]}]")
+        Log.d("MouseController", "pointerX: ${pc.x}, pointerY: ${pc.y}")
         val pcs = arrayOf(pc)
-        val t = SystemClock.uptimeMillis()
-        val e = MotionEvent.obtain(
-            t,  // long downTime
-            t + 100,  // long eventTime
-            event,  // int action
-            pps.size,  // int pointerCount
-            pps,  // MotionEvent.PointerProperties[] pointerProperties
-            pcs,  // MotionEvent.PointerCoords[] pointerCoords
-            0,  // int metaState
-            0, 1f, 1f,  // float yPrecision
-            1,  // int deviceId
-            0,  // int edgeFlags
-            InputDevice.SOURCE_TOUCHSCREEN,  //int source
-            0 // int flags
+        val time = SystemClock.uptimeMillis()
+        val eventToInject = MotionEvent.obtain(
+                time,  // long downTime
+                time + 100,  // long eventTime
+                event,  // int action
+                arrayOfPointerProperties.size,  // int pointerCount
+                arrayOfPointerProperties,  // MotionEvent.PointerProperties[] pointerProperties
+                pcs,  // MotionEvent.PointerCoords[] pointerCoords
+                0,  // int metaState
+                0, 1f, 1f,  // float yPrecision
+                1,  // int deviceId
+                0,  // int edgeFlags
+                InputDevice.SOURCE_TOUCHSCREEN,  //int source
+                0 // int flags
         )
 
-        activity.runOnUiThread { view.dispatchTouchEvent(e) }
+
+        Log.d("MouseController", "Ending InjectTouchEvent")
+        val instrumentation = Instrumentation()
+        instrumentation.sendPointerSync(eventToInject)
+//        InputManagerHelper.injectMotionEvent(eventToInject)
+//        activity.runOnUiThread { view.dispatchTouchEvent(e) }
     }
 
     private fun injectBackEvent() {
@@ -241,8 +243,8 @@ class InAppInputManager(context: Context) :
         val launchIntent = packageManager.getLaunchIntentForPackage(packageName)
         launchIntent!!.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
         val contentIntent = PendingIntent.getActivity(
-            this, 0, launchIntent,
-            PendingIntent.FLAG_UPDATE_CURRENT
+                this, 0, launchIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT
         )
         builder.setContentIntent(contentIntent)
         val notification: Notification = builder.build()

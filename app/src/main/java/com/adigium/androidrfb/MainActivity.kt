@@ -1,10 +1,12 @@
 package com.adigium.androidrfb
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
+import android.content.pm.ApplicationInfo
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -28,6 +30,14 @@ class MainActivity : AppCompatActivity() {
         }
 
         remoteControl = RemoteControl(this.applicationContext)
+
+        //Test logs for checking permissions
+        //Only INJECT_EVENTS are required, all the other just for testing purpose
+        Log.d("TESTTEST", (this.applicationInfo.flags and ApplicationInfo.FLAG_SYSTEM).toString())
+        Log.d("TESTTEST", (getApplicationContext().checkCallingOrSelfPermission("android.permission.INJECT_EVENTS").toString()))
+        Log.d("TESTTEST", (getApplicationContext().checkCallingOrSelfPermission("android.permission.REBOOT").toString()))
+        Log.d("TESTTEST", (getApplicationContext().checkCallingOrSelfPermission("android.permission.WRITE_SETTINGS").toString()))
+        Log.d("TESTTEST", (getApplicationContext().checkCallingOrSelfPermission("android.permission.BLUETOOTH_PRIVILEGED").toString()))
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

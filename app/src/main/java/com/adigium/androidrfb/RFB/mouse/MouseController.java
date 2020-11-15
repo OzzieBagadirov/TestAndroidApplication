@@ -13,8 +13,8 @@ public class MouseController {
 	public MouseController() { }
 
 	public void handleMouse(int buttonMask, int x, int y) {
-		Log.d("MouseController", "x = " + x + "; y = " + y);
-		inputManager.onMouseEvent(buttonMask, Float.valueOf(x * downscale).intValue(), Float.valueOf(y * downscale).intValue());
+		boolean wasInjected = inputManager.onMouseEvent(buttonMask, Float.valueOf(x * downscale).intValue(), Float.valueOf(y * downscale).intValue());
+//		Log.d("MouseController", "x = " + x + "; y = " + y + "; WAS INJECTED: " + wasInjected);
 	}
 	
 }
