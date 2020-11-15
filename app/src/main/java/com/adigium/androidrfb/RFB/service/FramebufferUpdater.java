@@ -37,7 +37,7 @@ public class FramebufferUpdater implements Runnable {
 	/**
 	 * Delay in millisec. which prevents framebuffer update flooding.
 	 */
-	public static final long DELAY = 1;
+	public static final long DELAY = 4;
 	public static int imageReady = 0;
 	
 	/**
@@ -229,7 +229,7 @@ public class FramebufferUpdater implements Runnable {
 				// Wait for frame buffer update request message.
 				//
 
-				final FramebufferUpdateRequest updateRequest = this.updateRequests.poll(DELAY, TimeUnit.MICROSECONDS);
+				final FramebufferUpdateRequest updateRequest = this.updateRequests.poll(DELAY, TimeUnit.MILLISECONDS);
 
 				// Here be careful to check updateRequest object against null value,
 				//  since frame buffer updater thread is started in parallel with client handler thread.
@@ -282,7 +282,7 @@ public class FramebufferUpdater implements Runnable {
 					}
 				}				
 						
-				TimeUnit.MICROSECONDS.sleep(DELAY);
+				TimeUnit.MILLISECONDS.sleep(DELAY);
 			}
 		}
 		catch (final Exception exception) {

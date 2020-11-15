@@ -39,14 +39,17 @@ public class ScreenCapture {
 		int width = 0;
 		int height = 0;
 		try {
-			if (FramebufferUpdater.imageReady - 1 >= 0) {
+			if (FramebufferUpdater.imageReady != 0) {
+				FramebufferUpdater.imageReady = 0;
 				image = imageReader.acquireLatestImage();
-				FramebufferUpdater.imageReady -= 1;
 				Log.d("ImageReader", "Image taken. Images now: " + FramebufferUpdater.imageReady);
 				if (image != null) {
 					width = image.getWidth();
 					height = image.getHeight();
 					IntBuffer colorImageBuffer = image.getPlanes()[0].getBuffer().asIntBuffer();
+
+					arrayBuffer = new int[colorImageBuffer.limit()];
+					colorImageBuffer.get(arrayBuffer);
 
 					try {
 						image.close();
@@ -54,8 +57,6 @@ public class ScreenCapture {
 						Log.w("ScreenCapture", "Image already closed");
 					}
 
-					arrayBuffer = new int[colorImageBuffer.limit()];
-					colorImageBuffer.get(arrayBuffer);
 				} else {
 					FramebufferUpdater.imageReady = 0;
 					return null;

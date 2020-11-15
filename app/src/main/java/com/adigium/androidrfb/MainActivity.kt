@@ -5,28 +5,29 @@ import android.content.pm.ApplicationInfo
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.Switch
 import androidx.appcompat.app.AppCompatActivity
 
 
 class MainActivity : AppCompatActivity() {
 
     private var remoteControl: RemoteControl? = null
-    var view: View? = null
-    var constraint: View? = null
+    private var switch: Switch? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
 
-        view = findViewById(R.id.text_view)
-        constraint = findViewById(R.id.constraint)
-        view!!.setOnClickListener {
-            Log.d("TESTTEST", "Clicked")
-            remoteControl!!.start(this, 100)
-        }
-        constraint!!.setOnClickListener {
-            Log.d("testtest", "root view clicked")
-            remoteControl!!.stop()
+        switch = findViewById(R.id.server_switch)
+        switch!!.setOnClickListener {
+            if (switch!!.isChecked) {
+                Log.d("MainActivity", "Server switch turned on")
+                remoteControl!!.start(this, 100)
+            } else {
+                Log.d("MainActivity", "Server switch turned off")
+                remoteControl!!.stop()
+            }
         }
 
         remoteControl = RemoteControl(this.applicationContext)

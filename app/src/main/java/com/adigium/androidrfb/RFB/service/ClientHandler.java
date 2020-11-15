@@ -14,34 +14,17 @@ import com.adigium.androidrfb.RFB.screen.ScreenCapture;
 import com.adigium.androidrfb.RFB.mouse.MouseController;
 import com.adigium.androidrfb.RFB.screen.ScreenCapture;
 
-/**
- * This is socket handler that will handle client connection.
- * <p>
- * Instance of this class is created for each client, for each new session.
- * <p>
- * Goal is to perform initial handshake, authorization (ask client to provide password / secret) if any, etc.
- * 
- * @author igor.delac@gmail.com
- *
- */
 class ClientHandler implements Runnable {
 
 	private final Socket socket;
-	
 	private boolean running;
-	
 	private final RFBConfig config;
-	
 	private final MouseController mouseController;
-	
+
 	public ClientHandler(final Socket socket, final RFBConfig config) {
-		
 		this.socket = socket;
-		
 		this.running = false;
-		
 		this.config = config;
-		
 		this.mouseController = new MouseController();
 	}
 	
@@ -51,7 +34,6 @@ class ClientHandler implements Runnable {
 	 * @return	true if client thread is running
 	 */
 	public boolean isRunning() {
-		
 		return this.running;
 	}
 	
@@ -59,16 +41,11 @@ class ClientHandler implements Runnable {
 	 * Terminate connection with VNC client.
 	 */
 	public void terminate() {
-	
 		if (this.socket != null) {
-			
 			try {
-			
 				this.running = false;
-				
 				this.socket.close();
 			} catch (final IOException exception) {
-
 				Log.e("ClientHandler", "Client handler termination failure.", exception);
 			}
 		}
@@ -78,7 +55,6 @@ class ClientHandler implements Runnable {
 	private short getWidth() {
 		return (short) ScreenCapture.screenWidth;
 	}
-
 	private short getHeight() {
 		return (short) ScreenCapture.screenHeight;
 	}
@@ -198,20 +174,12 @@ class ClientHandler implements Runnable {
 			// Run in loop, wait for some requests from client. 
 			//
 
-			while (this.running == true) {
+			while (this.running) {
 				
-				if (frameBufferUpdater.isRunning() == false) {
-					
+				if (!frameBufferUpdater.isRunning()) {
 					break; // Stop this client handler, if updater is not running anymore.
 				}
-				
-				//
-				// 'The RFB Protocol' documentation, page 19,
-				// by Tristan Richardson, RealVNC Ltd.
-				//
-				// Version 3.8, Last updated 26 November 2010
-				//
-				
+
 				final int EOF = -1
 						, SET_PIXEL_FORMAT = 0
 						, SET_ENCODINGS = 2
@@ -226,24 +194,14 @@ class ClientHandler implements Runnable {
 				
 				int msgType = in.read();
 
-				if (msgType != 5) {
-					Log.d("ClientHandler", String.valueOf(msgType));
-				}
-
-				if (msgType == EOF) {
-					
-					break;					
-				}
+				if (msgType == EOF) { break; }
 				else if (msgType == SET_PIXEL_FORMAT) {
-					
 					in.read(new byte[3]); // padding.
 					setPixelFormat = SetPixelFormat.read(in);
-					
 					frameBufferUpdater.setPixelFormat(setPixelFormat);
 				}
 				else if (msgType == SET_ENCODINGS) {
-					
-					in.read(); // padding.					
+					in.read(); // padding.
 					setEncodings = SetEncodings.read(in);
 					frameBufferUpdater.setClientEncodings(setEncodings);
 				}
@@ -270,53 +228,41 @@ class ClientHandler implements Runnable {
 
 				}
 				else if (msgType == CLIENT_CUT_TEXT) {
-					
-					final ClientCutText event = ClientCutText.read(in);
-					
-					try {
 					//TODO: MAKE CLIPBOARD COPYING
-
+//					final ClientCutText event = ClientCutText.read(in);
+//
+//					try {
 //						final Clipboard clipboard =
 //								Toolkit.getDefaultToolkit().getSystemClipboard();
 //						final StringSelection selection = new StringSelection(event.text);
 //						clipboard.setContents(selection, selection);
-					}
-					catch (final Exception ex) {
-						
-						Log.e("ClientHandler", "Unable to copy to clipboard text.", ex);
-					}
+//					}
+//					catch (final Exception ex) {
+//						Log.e("ClientHandler", "Unable to copy to clipboard text.", ex);
+//					}
 				}
 			}			
 			
 			in.close();
 			out.close();
 		} catch (final IOException | InterruptedException exception) {
-
-			if (this.running == true) {
-			
-				Log.i(
-						"ClientHandler",
-						String.format("Client connection '%s' closed.", this.socket.getRemoteSocketAddress())
-						);
+			if (this.running) {
+				Log.i("ClientHandler", String.format("Client connection '%s' closed.", this.socket.getRemoteSocketAddress()));
 			}
 		}
 		
 		this.running = false;
 		
 		if (frameBufferUpdater != null) {
-		
 			frameBufferUpdater.terminate();
 		}
 	}
 
 	@Override
 	public String toString() {
-		
 		if (this.socket == null) {
-			
 			return ClientHandler.class.getSimpleName();
 		}
-		
 		return String.format("%s-[%s]", ClientHandler.class.getSimpleName(), this.socket.getRemoteSocketAddress());
 	}
 }
