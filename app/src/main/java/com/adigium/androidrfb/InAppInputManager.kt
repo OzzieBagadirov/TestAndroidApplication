@@ -54,7 +54,6 @@ class InAppInputManager(context: Context) : Service() {
     }
 
     private fun injectTouchEvent(buttonId: Int, event: Int, x: Int, y: Int) {
-        Log.d("MouseController", "Starting InjectTouchEvent")
         val pointerProperties = PointerProperties()
         pointerProperties.toolType = MotionEvent.TOOL_TYPE_FINGER
         pointerProperties.id = 0
@@ -83,8 +82,6 @@ class InAppInputManager(context: Context) : Service() {
                 0                           // int flags
         )
 
-
-        Log.d("MouseController", "Ending InjectTouchEvent")
         instrumentation!!.sendPointerSync(eventToInject)
 //        InputManagerHelper.injectMotionEvent(eventToInject)
     }

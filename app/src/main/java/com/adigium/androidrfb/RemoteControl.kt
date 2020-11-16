@@ -3,7 +3,6 @@ package com.adigium.androidrfb
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.graphics.ImageFormat
 import android.graphics.PixelFormat
 import android.graphics.Point
 import android.hardware.display.DisplayManager
@@ -19,11 +18,11 @@ import android.util.DisplayMetrics
 import android.util.Log
 import android.view.Display
 import androidx.core.content.ContextCompat.getSystemService
-import com.adigium.androidrfb.RFB.encoding.RichCursorEncoder
-import com.adigium.androidrfb.RFB.mouse.MouseController
-import com.adigium.androidrfb.RFB.screen.ScreenCapture
-import com.adigium.androidrfb.RFB.service.FramebufferUpdater
-import com.adigium.androidrfb.RFB.service.RFBService
+import com.adigium.androidrfb.rfb.encoding.RichCursorEncoder
+import com.adigium.androidrfb.rfb.mouse.MouseController
+import com.adigium.androidrfb.rfb.screen.ScreenCapture
+import com.adigium.androidrfb.rfb.service.FramebufferUpdater
+import com.adigium.androidrfb.rfb.service.RFBService
 
 class RemoteControl() {
     private val TAG = "REMOTE_CONTROL"
@@ -138,7 +137,7 @@ class RemoteControl() {
     inner class ImageAvailableListener : OnImageAvailableListener {
         override fun onImageAvailable(reader: ImageReader) {
             FramebufferUpdater.imageReady()
-            Log.d("ImageReader", "New image available. Images now: " + FramebufferUpdater.imageReady)
+//            Log.d("ImageReader", "New image available. Images now: " + FramebufferUpdater.imageReady)
         }
     }
 
