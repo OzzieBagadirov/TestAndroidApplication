@@ -58,7 +58,7 @@ class BasicCompression {
 		
 			// As per description ( https://github.com/rfbproto/rfbproto/blob/master/rfbproto.rst#tight-encoding ),
 			// convert PIXEL into TPIXEL (ARGB --> BGR). Reduce 1 byte for each pixel.
-			raw = TrueColorImage.toBGR(new TrueColorImage(image, width, height));			
+			raw = null; //new TrueColorImage(image, width, height).toBGR();
 		}
 		else {
 			

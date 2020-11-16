@@ -38,7 +38,7 @@ public class ScreenCapture {
 				FramebufferUpdater.imageReady = 0;
 				image = imageReader.acquireLatestImage();
 
-				Log.d("ScreenCapture","Image Format: " + image.getFormat());
+//				Log.d("ScreenCapture","Image Format: " + image.getFormat());
 //				Log.d("ImageReader", "Image taken. Images now: " + FramebufferUpdater.imageReady);
 				if (image != null) {
 					width = image.getWidth();
@@ -53,13 +53,6 @@ public class ScreenCapture {
 					} catch (IllegalStateException e) {
 						Log.w("ScreenCapture", "Image already closed");
 					}
-
-					//TODO: MAKE BYTE ORDER TEMPLATES AND SYNC WITH CLIENT
-					//Converting from ARGB to BGR as VNCViewer expect
-					int[] array = convert(TrueColorImage.toBGR(new TrueColorImage(arrayBuffer, width, height)));
-
-					return new TrueColorImage(array, width, height);
-
 				} else {
 					FramebufferUpdater.imageReady = 0;
 					return null;
@@ -69,17 +62,7 @@ public class ScreenCapture {
 			Log.e("ScreenCapture", "Error: ", e);
 		}
 
-		return new TrueColorImage(arrayBuffer, width, height);
-	}
-
-	public static int[] convert(byte buf[]) {
-		int intArr[] = new int[buf.length / 3];
-		int offset = 0;
-		for(int i = 0; i < intArr.length; i++) {
-			intArr[i] = ((buf[2 + offset] & 0xFF) << 0) | ((buf[1 + offset] & 0xFF) << 8) |
-					((buf[0 + offset] & 0xFF) << 16);
-			offset += 3;
-		}
-		return intArr;
+		//TODO: MAKE BYTE ORDER TEMPLATES AND SYNC WITH CLIENT
+		return new TrueColorImage(arrayBuffer, width, height).toBGR();
 	}
 }

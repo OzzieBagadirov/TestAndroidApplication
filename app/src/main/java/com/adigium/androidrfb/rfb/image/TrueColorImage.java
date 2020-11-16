@@ -19,7 +19,7 @@ import com.adigium.androidrfb.rfb.screen.ScreenCapture;
  */
 public class TrueColorImage {
 
-	public final int[] raw;
+	public int[] raw;
 	
 	public final int width, height;
 	
@@ -116,15 +116,7 @@ public class TrueColorImage {
 		builder.append("]");
 		return builder.toString();
 	}
-	
-	/**
-	 * Convert {@link TrueColorImage} instance to {@link BufferedImage}.
-	 * Here is assumed pixel arrangement to be {@link BufferedImage#TYPE_INT_ARGB}. 
-	 * 
-	 * @param		trueColorImage		-	instance of {@link TrueColorImage} object
-	 * 
-	 * @return	{@link BufferedImage} of type {@link BufferedImage#TYPE_INT_ARGB}, or null if input argument is null
-	 */
+
 //	public static BufferedImage toBufferedImage(final TrueColorImage trueColorImage) {
 //
 //		if (trueColorImage == null) {
@@ -150,29 +142,29 @@ public class TrueColorImage {
 //	 *
 //	 * @return	raw byte array
 //	 */
-	public static byte[] toBGR(final TrueColorImage trueColorImage) {
+	public TrueColorImage toBGR() {
 
-		int[] src = trueColorImage.raw;
+		int[] src = this.raw;
 
-		final byte[] raw = new byte[src.length * 3];
-
-		final ByteBuffer dstBuffer = ByteBuffer.wrap(raw);
+		int[] res = new int[src.length];
 
 		for (int i = 0 ; i < src.length ; i++) {
 
 			int pixel = src[i];
 
 			// Convert from ARGB into BGR.
-			dstBuffer.put( (byte) (pixel & 0xFF)); // Blue component.
+			byte b = ((byte) (pixel & 0xFF)); // Blue component.
 			pixel = pixel >> 8;
 
-			dstBuffer.put( (byte) (pixel & 0xFF)); // Green component.
+			byte g = ((byte) (pixel & 0xFF)); // Green component.
 			pixel = pixel >> 8;
 
-			dstBuffer.put( (byte) (pixel & 0xFF)); // Red component.
-			pixel = pixel >> 8;
+			byte r = ((byte) (pixel & 0xFF)); // Red component.
+
+			res[i] = ((r & 0xFF)) | ((g & 0xFF) << 8) | ((b & 0xFF) << 16);
 		}
 
-		return raw;
+		this.raw = res;
+		return this;
 	}
 }
