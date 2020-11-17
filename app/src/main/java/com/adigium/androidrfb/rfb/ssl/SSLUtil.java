@@ -12,6 +12,7 @@ import java.security.cert.CertificateException;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLServerSocketFactory;
+import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 
@@ -76,10 +77,28 @@ public class SSLUtil {
 
 		final SSLContext sslContext = SSLContext.getInstance("TLS"); 
 		final TrustManager[] trustManagers = trustManagerFactory.getTrustManagers(); 
-		sslContext.init(keyManagerFactory.getKeyManagers(), trustManagers, null); 
+		sslContext.init(keyManagerFactory.getKeyManagers(), trustManagers, null);
 
-		final SSLServerSocketFactory sslServerSocketFactory = sslContext.getServerSocketFactory();
-		
-		return sslServerSocketFactory;
+
+		return sslContext.getServerSocketFactory();
+	}
+
+	public static SSLSocketFactory newSocketInstance(final String keystoreType
+			, final InputStream keystoreFile, final String password) throws KeyManagementException, KeyStoreException, UnrecoverableKeyException, NoSuchAlgorithmException, CertificateException, IOException {
+
+		final KeyStore keyStore = KeyStore.getInstance(keystoreType);
+		keyStore.load(keystoreFile, password.toCharArray());
+
+		final KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+		keyManagerFactory.init(keyStore, password.toCharArray());
+
+		final TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+		trustManagerFactory.init(keyStore);
+
+		final SSLContext sslContext = SSLContext.getInstance("TLS");
+		final TrustManager[] trustManagers = trustManagerFactory.getTrustManagers();
+		sslContext.init(keyManagerFactory.getKeyManagers(), trustManagers, null);
+
+		return sslContext.getSocketFactory();
 	}
 }

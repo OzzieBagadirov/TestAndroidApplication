@@ -1,6 +1,7 @@
 package com.adigium.androidrfb.rfb.service;
 
 import javax.net.ssl.SSLServerSocketFactory;
+import javax.net.ssl.SSLSocketFactory;
 
 import com.adigium.androidrfb.rfb.encoding.Encodings;
 import com.adigium.androidrfb.rfb.ssl.SSLUtil;
@@ -31,6 +32,7 @@ class RFBConfig {
 	private int[] preferredEncodings;
 	
 
+	private SSLSocketFactory sslSocketFactory;
 	private SSLServerSocketFactory sslServerSocketFactory;
 	
 	/**
@@ -87,7 +89,12 @@ class RFBConfig {
 		
 		this.sslServerSocketFactory = sslServerSocketFactory;
 	}
-	
+
+
+	public void setSSLSocketFactory(final SSLSocketFactory sslSocketFactory) {
+
+		this.sslSocketFactory = sslSocketFactory;
+	}
 	/**
 	 * Check if this {@link RFBConfig} contains an instance of {@link SSLServerSocketFactory}.
 	 * <p>
@@ -98,5 +105,10 @@ class RFBConfig {
 	public SSLServerSocketFactory getSSLServerSocketFactory() {
 		
 		return this.sslServerSocketFactory;
+	}
+
+	public SSLSocketFactory getSSLSocketFactory() {
+
+		return this.sslSocketFactory;
 	}
 }

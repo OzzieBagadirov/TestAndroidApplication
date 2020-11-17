@@ -29,6 +29,9 @@ class RemoteControl() {
     private var context: Context? = null
     private var downscale = 0.0
 
+    private var host: String = "localhost"
+    private var port: Int = 60000
+
     private var projectionManager: MediaProjectionManager? = null
     private var mediaProjection: MediaProjection? = null
     private var captureThread: Thread? = null
@@ -48,10 +51,12 @@ class RemoteControl() {
 
     private val minAPILevel = Build.VERSION_CODES.LOLLIPOP
 
-    constructor(context: Context): this() {
+    constructor(context: Context, host: String, port: Int): this() {
 
         this.context = context
-        rfbService = RFBService()
+        rfbService = RFBService(host, port)
+        this.host = host
+        this.port = port
         inputManager = InAppInputManager(context)
         MouseController.inputManager = inputManager
         RichCursorEncoder.context = context
@@ -175,10 +180,10 @@ class RemoteControl() {
         val width = (size.x / downscale).toInt()
         val height = (size.y / downscale).toInt()
         if (rfbService != null) {
-            rfbService = RFBService()
+            rfbService = RFBService(host, port)
             rfbService!!.start(width, height)
         } else {
-            rfbService = RFBService()
+            rfbService = RFBService(host, port)
             rfbService!!.start(width, height)
         }
         val VIRTUAL_DISPLAY_FLAGS =

@@ -1,5 +1,7 @@
 package com.adigium.androidrfb.rfb.service;
 
+import android.util.Log;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -53,7 +55,7 @@ class ProtocolVersion {
 		byte[] buff = new byte[12];
 		
 		in.read(buff);
-		
+
 		if (buff[0] == 'R' && buff[1] == 'F' && buff[2] == 'B' && buff[3] == ' '
 			&& buff[4] == '0' && buff[5] == '0' && buff[6] == '3' && buff[7] == '.'
 			&& buff[8] == '0' && buff[9] == '0' && (buff[10] >= '3' || buff[10] <= '8') && buff[11] == '\n'
