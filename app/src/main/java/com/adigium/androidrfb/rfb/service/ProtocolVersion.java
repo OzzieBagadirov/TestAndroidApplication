@@ -56,6 +56,8 @@ class ProtocolVersion {
 		
 		in.read(buff);
 
+		Log.d("ProtocolVersion", Arrays.toString(buff));
+
 		if (buff[0] == 'R' && buff[1] == 'F' && buff[2] == 'B' && buff[3] == ' '
 			&& buff[4] == '0' && buff[5] == '0' && buff[6] == '3' && buff[7] == '.'
 			&& buff[8] == '0' && buff[9] == '0' && (buff[10] >= '3' || buff[10] <= '8') && buff[11] == '\n'

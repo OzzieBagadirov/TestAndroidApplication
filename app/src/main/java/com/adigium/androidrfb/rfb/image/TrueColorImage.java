@@ -167,4 +167,30 @@ public class TrueColorImage {
 		this.raw = res;
 		return this;
 	}
+
+	public static byte[] toBGR(final TrueColorImage trueColorImage) {
+
+		int[] src = trueColorImage.raw;
+
+		final byte[] raw = new byte[src.length * 3];
+
+		final ByteBuffer dstBuffer = ByteBuffer.wrap(raw);
+
+		for (int i = 0 ; i < src.length ; i++) {
+
+			int pixel = src[i];
+
+			// Convert from ARGB into BGR.
+			dstBuffer.put( (byte) (pixel & 0xFF)); // Blue component.
+			pixel = pixel >> 8;
+
+			dstBuffer.put( (byte) (pixel & 0xFF)); // Green component.
+			pixel = pixel >> 8;
+
+			dstBuffer.put( (byte) (pixel & 0xFF)); // Red component.
+			pixel = pixel >> 8;
+		}
+
+		return raw;
+	}
 }

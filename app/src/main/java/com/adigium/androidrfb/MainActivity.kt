@@ -30,8 +30,8 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        remoteControl = RemoteControl(this.applicationContext, "10.0.2.2", 60000)
-
+//        remoteControl = RemoteControl(this.applicationContext, "10.0.2.2", 60000)
+        remoteControl = RemoteControl(this.applicationContext, "192.168.2.139", 60000)
         //Test logs for checking permissions
         //Only INJECT_EVENTS are required, all the other just for testing purpose
         Log.d("TESTTEST", (this.applicationInfo.flags and ApplicationInfo.FLAG_SYSTEM).toString())

@@ -193,6 +193,8 @@ class ClientHandler implements Runnable {
 				
 				int msgType = in.read();
 
+				Log.d("ClientHandler", String.valueOf(msgType));
+
 				if (msgType == EOF) { break; }
 				else if (msgType == SET_PIXEL_FORMAT) {
 					in.read(new byte[3]); // padding.

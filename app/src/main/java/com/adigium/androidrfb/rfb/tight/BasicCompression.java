@@ -4,6 +4,8 @@ import android.util.Log;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
 import java.util.zip.Deflater;
 
 
@@ -58,7 +60,10 @@ class BasicCompression {
 		
 			// As per description ( https://github.com/rfbproto/rfbproto/blob/master/rfbproto.rst#tight-encoding ),
 			// convert PIXEL into TPIXEL (ARGB --> BGR). Reduce 1 byte for each pixel.
-			raw = null; //new TrueColorImage(image, width, height).toBGR();
+			TrueColorImage colorImage = new TrueColorImage(image, width, height);
+
+
+			raw = TrueColorImage.toBGR(colorImage);
 		}
 		else {
 			

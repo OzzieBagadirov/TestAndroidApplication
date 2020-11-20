@@ -12,6 +12,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.SSLServerSocketFactory;
 import javax.net.ssl.SSLSocketFactory;
@@ -19,6 +20,7 @@ import javax.net.ssl.SSLSocketFactory;
 import com.adigium.androidrfb.rfb.encoding.Encodings;
 import com.adigium.androidrfb.rfb.screen.ScreenCapture;
 import com.adigium.androidrfb.rfb.ssl.SSLUtil;
+import com.adigium.androidrfb.rfb.test.ClientWebSocket;
 
 /**
  * RFB service is Java implementation of VNC server.
@@ -153,6 +155,16 @@ public class RFBService implements Runnable {
 
                 this.socket = sslFactory != null ? sslFactory.createSocket(host, port) : new Socket(host, port);
 
+
+//                ClientWebSocket webSocket = new ClientWebSocket("ws://10.0.2.2:8080");
+//                webSocket.connect();
+//                while (this.socket == null) {
+//                    this.socket = webSocket.getSocket();
+//                    TimeUnit.MILLISECONDS.sleep(10);
+//                }
+//                webSocket.run();
+//                Log.d("RFBService", "Got the socket");
+
                 this.clientHandler = new ClientHandler(this.socket, this.rfbConfig);
 
                 final Thread clientThread = new Thread(clientHandler, "Client");
@@ -160,7 +172,7 @@ public class RFBService implements Runnable {
 
                 Log.i("RFBService", String.format("RFB service (VNC c) started at TCP address '%s'.", this.socket.getInetAddress()));
 
-            } catch (final IOException exception) {
+            } catch (final Exception exception) {
                 Log.e("RFBService", String.format("Unable to open TCP port '%d'. RFB service terminated.", this.port), exception);
             }
         }

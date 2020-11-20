@@ -63,6 +63,6 @@ public class ScreenCapture {
 		}
 
 		//TODO: MAKE BYTE ORDER TEMPLATES AND SYNC WITH CLIENT
-		return new TrueColorImage(arrayBuffer, width, height).toBGR();
+		return new TrueColorImage(arrayBuffer, width, height);//.toBGR();
 	}
 }
