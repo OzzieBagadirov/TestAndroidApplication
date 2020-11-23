@@ -13,11 +13,7 @@ import com.adigium.androidrfb.rfb.encoding.RawEncoder;
 import com.adigium.androidrfb.rfb.image.TrueColorImage;
 import com.adigium.androidrfb.rfb.service.SetPixelFormat;
 
-/**
- * Basic compression method, with only copy filter.
- * <p>
- * Support for gradient and palette filter are not supported yet.
- */
+
 class BasicCompression {
 
 	final private Deflater deflater;

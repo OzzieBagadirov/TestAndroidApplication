@@ -4,11 +4,6 @@ import java.nio.ByteBuffer;
 
 import com.adigium.androidrfb.rfb.service.SetPixelFormat;
 
-/**
- * Raw encoder just aligns bytes within 32-bit true color image of screen.
- * <p>
- * This encoder is stateless.
- */
 public class RawEncoder implements EncodingInterface {
 
 	/**

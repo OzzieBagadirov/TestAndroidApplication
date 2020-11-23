@@ -1,5 +1,6 @@
 package com.adigium.androidrfb
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -27,7 +28,7 @@ import com.adigium.androidrfb.rfb.service.RFBService
 class RemoteControl() {
     private val TAG = "REMOTE_CONTROL"
     private var context: Context? = null
-    private var downscale = 0.0
+    public var downscale = 0.0
 
     private var host: String = "localhost"
     private var port: Int = 60000
@@ -120,12 +121,10 @@ class RemoteControl() {
             density = metrics.densityDpi
             display = activity.windowManager.defaultDisplay
             if (downscale == 0.0) {
-                downscale = if (density < 280) {
-                    1.0
-                } else if (density < 400) {
-                    2.0
-                } else {
-                    3.0
+                downscale = when {
+                    density < 280 -> 2.0
+                    density < 400 -> 3.0
+                    else -> 4.0
                 }
             }
             MouseController.downscale = downscale.toFloat()
@@ -142,7 +141,6 @@ class RemoteControl() {
     inner class ImageAvailableListener : OnImageAvailableListener {
         override fun onImageAvailable(reader: ImageReader) {
             FramebufferUpdater.imageReady()
-//            Log.d("ImageReader", "New image available. Images now: " + FramebufferUpdater.imageReady)
         }
     }
 
@@ -166,12 +164,10 @@ class RemoteControl() {
         }
     }
 
+    @SuppressLint("WrongConstant")
     private fun createVirtualDisplay() {
         if (Build.VERSION.SDK_INT < minAPILevel) {
-            Log.w(
-                TAG,
-                "Can't run createVirtualDisplay() due to a low API level. API level 21 or higher is required."
-            )
+            Log.w(TAG,"Can't run createVirtualDisplay() due to a low API level. API level 21 or higher is required.")
             return
         }
         // get width and height
@@ -193,7 +189,7 @@ class RemoteControl() {
         imageReader = ImageReader.newInstance(width, height, PixelFormat.RGBA_8888, 2)
         setImageReader()
         virtualDisplay = mediaProjection!!.createVirtualDisplay(
-            "cvio",
+            "androidRFB",
             width,
             height,
             density,
@@ -205,33 +201,4 @@ class RemoteControl() {
 
         imageReader!!.setOnImageAvailableListener(ImageAvailableListener(), handler)
     }
-
-
-//    override fun rfbKbdAddEventProc(down: Boolean, keySymCode: Long, client: String?) {
-////        val ks: KeySym = KeySym.lookup.get(keySymCode.toInt())
-////        inputManager.onKeyboardEvent(down, ks)
-//    }
-//
-//    override fun rfbKbdReleaseAllKeysProc(client: String) {
-////        Log.d(com.teskalabs.cvio.CatVision.TAG, "rfbKbdReleaseAllKeysProc: client:$client")
-//    }
-//
-//    override fun rfbPtrAddEventProc(buttonMask: Int, x: Int, y: Int, client: String?) {
-//        inputManager!!.onMouseEvent(buttonMask, (x * downscale).toInt(), (y * downscale).toInt())
-//    }
-//
-//    override fun rfbSetXCutTextProc(text: String, client: String) {
-//        Log.d(
-//            TAG, "rfbSetXCutTextProc: text:$text client:$client"
-//        )
-//    }
-//
-//    override fun rfbNewClientHook(client: String?): Int {
-//        try {
-//            handler!!.post { Log.d(TAG, "rfbNewClientHook") }
-//        } catch (e: java.lang.Exception) {
-//            Log.e(TAG, "Failed to trigger SeaCat event", e)
-//        }
-//        return 0
-//    }
 }

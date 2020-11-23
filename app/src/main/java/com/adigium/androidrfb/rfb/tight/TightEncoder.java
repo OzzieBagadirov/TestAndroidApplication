@@ -4,23 +4,8 @@ import com.adigium.androidrfb.rfb.encoding.EncodingInterface;
 import com.adigium.androidrfb.rfb.encoding.Encodings;
 import com.adigium.androidrfb.rfb.service.SetPixelFormat;
 
-/**
- * Implementation as described in 
- * <a href="https://github.com/rfbproto/rfbproto/blob/master/rfbproto.rst#tight-encoding">Tight encoding</a>.
- * <p>
- * Note that this is early implementation, not efficient as it could be.
- */
 public class TightEncoder implements EncodingInterface {
 
-	/**
-	 * Flag to control which compression to use: <i>Basic</i>
-	 * compression will use <i>Zlib</i> losless method to compress
-	 * raw screen image, while default <i>JpegCompression</i> will
-	 * use built-in Java JPEG method to compress screen image.
-	 * <p>
-	 * Note that if pixel format is not 32-bit with 24 color depth,
-	 * it will use basic compression regardless of this flag value.
-	 */
 	public static boolean USE_BASIC_COMPRESSION = false;
 	
 	private final BasicCompression basicCompression;

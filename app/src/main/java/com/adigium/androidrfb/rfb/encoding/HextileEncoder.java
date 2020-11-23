@@ -9,26 +9,8 @@ import java.util.List;
 
 import com.adigium.androidrfb.rfb.service.SetPixelFormat;
 
-/**
- * Hextile encoding divides image into 16x16 pixel tiles.
- * <p>
- * This implementation is very simple:<br>
- * It will turn image into tiles, check if tile is single-coloured
- * and if it is, then it will encode tile with 1 pixel, otherwise
- * it will encode as raw tile using {@link RawEncoder}.
- * <p>
- */
 public class HextileEncoder implements EncodingInterface {
 
-	/**
-	 * Each tile begins with byte named <i>subencoding mask</i>.
-	 * <p>
-	 * It contains bits, that define how to decode tile data.
-	 * <p>
-	 * Mask bits are defined by 
-	 * <p>
-	 * <a href="https://github.com/rfbproto/rfbproto/blob/master/rfbproto.rst#id77">hextile encoding</a> document.
-	 */
 	public final static byte MASK_RAW = 0b00000001
 			, MASK_BACKGROUND_SPECIFIED = 0b00000010
 			, MASK_FOREGROUND_SPECIFIED = 0b00000100
@@ -42,15 +24,7 @@ public class HextileEncoder implements EncodingInterface {
 		
 		this.rawEncoder = new RawEncoder();
 	}
-	
-	/**
-	 * This is simple hextile encoding implementation, that will
-	 * simply divide image into hex. tiles (16x16 pixel),
-	 * and write them continuously from upper left to bottom right,
-	 * in order.
-	 * <p>
-	 * 
-	 */
+
 	@Override
 	public byte[] encode(final int[] image, final int width, final int height, final SetPixelFormat pixelFormat) {
 
@@ -76,6 +50,7 @@ public class HextileEncoder implements EncodingInterface {
 					// Use pixel transform routing with pixel format provided. This covers case when
 					// VNC client requests 8-bit color mode, while source image is 32-bit color image.					
 					final byte bitsPerPixel = pixelFormat.bitsPerPixel;
+
 					
 					if (bitsPerPixel == 8) {
 					
@@ -120,13 +95,7 @@ public class HextileEncoder implements EncodingInterface {
 		return Encodings.HEXTILE;
 	}
 
-	/**
-	 * Check if tile contains only 1 color.
-	 * 
-	 * @param tile	-	{@link Tile} object
-	 * 
-	 * @return	pixel value, or <i>null</i> if tile is not <i>single-colored</i>
-	 */
+
 	private Integer singlePixelTile(final Tile tile) {
 		
 		if (tile == null || tile.raw() == null) {
@@ -146,6 +115,6 @@ public class HextileEncoder implements EncodingInterface {
 			}
 		}
 		
-		return Integer.valueOf(firstPixel);
+		return firstPixel;
 	}
 }

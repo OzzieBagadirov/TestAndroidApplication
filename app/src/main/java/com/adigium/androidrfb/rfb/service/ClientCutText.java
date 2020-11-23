@@ -8,25 +8,12 @@ class ClientCutText {
 	
 	public String text;
 	
-	/**
-	 * Create new ClientCutText object.
-	 * 
-	 */
+
 	public ClientCutText(final String text) {
 
 		this.text = text;
 	}
-	
-	/**
-	 * The client has new ISO 8859-1 (Latin-1) text in its cut buffer.
-	 * Ends of lines are represented by the linefeed / newline character (value 10) alone. No carriage-return (value 13) is needed.
-	 * 
-	 * @param inputStream		-	{@link InputStream} to read raw data from
-	 * 
-	 * @return	instance of {@link ClientCutText} message
-	 * 
-	 * @throws IOException	if connections breaks
-	 */
+
 	public static ClientCutText read(final InputStream inputStream) throws IOException {
 		
 		final DataInputStream in = new DataInputStream(inputStream);

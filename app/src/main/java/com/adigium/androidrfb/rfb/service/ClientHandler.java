@@ -27,18 +27,12 @@ class ClientHandler implements Runnable {
 		this.mouseController = new MouseController();
 	}
 	
-	/**
-	 * Check if client thread is running.
-	 * 
-	 * @return	true if client thread is running
-	 */
+
 	public boolean isRunning() {
 		return this.running;
 	}
 	
-	/**
-	 * Terminate connection with VNC client.
-	 */
+
 	public void terminate() {
 		if (this.socket != null) {
 			try {
@@ -79,105 +73,94 @@ class ClientHandler implements Runnable {
 		//
 		// Check & prepare TCP socket object.
 		//
-		
-		if (this.socket == null) {
-		
-			return;
-		}
-				
+
+		if (this.socket == null) return;
+
 		this.running = true;
-		
+
 		FramebufferUpdater frameBufferUpdater = null;
-		
+
 		try {
-			
+
 			final InputStream in   = this.socket.getInputStream();
 			final OutputStream out = new BufferedOutputStream(this.socket.getOutputStream());
-		
+
 			// This is updater for frame buffer, running it its own thread.
 			// Updater will receive frame buffer update requests from this thread,
 			//  and it will write response message back to socket.
 			frameBufferUpdater = new FramebufferUpdater(this, out);
 			frameBufferUpdater.setPreferredEncodings(this.config.getPreferredEncodings()); // If set, favor encodings of RFB service, instead of VNC client encoding list.
 			frameBufferUpdater.start();
-			
+
 			//
 			// RFB protocol starts by sending version string
 			//  and waiting for VNC client to reply with its version string.
 			//
-			
+
 			ProtocolVersion.sendProtocolVersion(out);
-			ver = ProtocolVersion.readProtocolVersion(in);			
+			ver = ProtocolVersion.readProtocolVersion(in);
 			Log.i("ClientHandler", "RFB protocol: " + ver);
-			
+
 			//
 			// Send supported security types.
 			//
-			
+
 			final byte[] securityTypes;
-			
+
 			if (this.config.getPassword() == null) {
-				
+
 				securityTypes = new byte[] {SecurityTypes.NONE};
 			}
 			else {
-				
+
 				securityTypes = new byte[] {SecurityTypes.VNC_AUTH};
 			}
-			
+
 			SecurityTypes.send(out, securityTypes);
 			sec = SecurityTypes.read(in);
-			
+
 			if (sec.securityType == SecurityTypes.VNC_AUTH) {
-				
+
 				// Send challenge data if VNC auth. is used.
 				final VNCAuth vncAuth = new VNCAuth(this.config.getPassword());
 				vncAuth.sendChallenge(out);
 				vncAuth.readChallenge(in);
-				
+
 				if (vncAuth.isValid() == false) {
-					
+
 					// Wrong password received from VNC client!
 					SecurityTypes.sendSecurityResult(out, "Wrong password.");
-					
+
 					this.running = false;
-					
+
 					this.socket.close();
-					
+
 					return;
 				}
 			}
-						
+
 			// SecurityResult message should be sent to VNC client.
 			// 'The RFB Protocol' documentation, page 10.
 			SecurityTypes.sendSecurityResult(out, null);
-			
-			//
+
 			// Wait for a ClientInit message.
-			//
-			
+
 			clientInit = ClientInit.readClientInit(in);
-			
-			if (clientInit.sharedDesktop == false) {
-			
+
+			if (!clientInit.sharedDesktop) {
+
 				Log.i("ClientHandler","Client requested exclusive access to desktop. We won't kick other VNC clients for now.");
 			}
-			
-			//
+
 			// ServerInit prepare and send.
-			//
-			
+
 			ServerInit.send(out, this.getWidth(), this.getHeight());
-			
-			//
-			// Run in loop, wait for some requests from client. 
-			//
+
+			// Run in loop, wait for some requests from client.
 
 			while (this.running) {
-				
-				if (!frameBufferUpdater.isRunning()) {
-					break; // Stop this client handler, if updater is not running anymore.
-				}
+
+				if (!frameBufferUpdater.isRunning()) break;
 
 				final int EOF = -1
 						, SET_PIXEL_FORMAT = 0
@@ -186,20 +169,27 @@ class ClientHandler implements Runnable {
 						, KEY_EVENT = 4
 						, POINTER_EVENT = 5
 						, CLIENT_CUT_TEXT = 6;
-				
-				//
-				// Read VNC client messages and handle them.
-				//
-				
-				int msgType = in.read();
 
-				Log.d("ClientHandler", String.valueOf(msgType));
+				// Read VNC client messages and handle them.
+
+				int msgType = in.read();
 
 				if (msgType == EOF) { break; }
 				else if (msgType == SET_PIXEL_FORMAT) {
 					in.read(new byte[3]); // padding.
 					setPixelFormat = SetPixelFormat.read(in);
-					Log.d("ClientHandler", "PixelFormat: " + setPixelFormat.bitsPerPixel);
+					Log.d("ClientHandler", "PixelFormat: "
+							+ setPixelFormat.bitsPerPixel + " "
+							+ setPixelFormat.depth + " "
+							+ setPixelFormat.bigEndianFlag + " "
+							+ setPixelFormat.trueColorFlag + " "
+							+ setPixelFormat.redMax + " "
+							+ setPixelFormat.greenMax + " "
+							+ setPixelFormat.blueMax + " "
+							+ setPixelFormat.redShift + " "
+							+ setPixelFormat.greenShift + " "
+							+ setPixelFormat.blueShift + " "
+					);
 					frameBufferUpdater.setPixelFormat(setPixelFormat);
 				}
 				else if (msgType == SET_ENCODINGS) {
@@ -208,8 +198,8 @@ class ClientHandler implements Runnable {
 					frameBufferUpdater.setClientEncodings(setEncodings);
 				}
 				else if (msgType == FRAMEBUFFER_UPDATE_REQUEST) {
-					
-					final FramebufferUpdateRequest request = 
+
+					final FramebufferUpdateRequest request =
 							FramebufferUpdateRequest.read(in);
 
 					frameBufferUpdater.update(request);
@@ -220,12 +210,12 @@ class ClientHandler implements Runnable {
 //					KeyboardController.sendKey(keyEvent.key, keyEvent.downFlag);
 //				}
 				else if (msgType == POINTER_EVENT) {
-					
+
 					final PointerEvent pointerEvent = PointerEvent.read(in);
-					
+
 					int x = pointerEvent.xPos;
 					int y = pointerEvent.yPos;
-					
+
 					this.mouseController.handleMouse(pointerEvent.buttonMask, x, y);
 
 				}
@@ -243,8 +233,8 @@ class ClientHandler implements Runnable {
 //						Log.e("ClientHandler", "Unable to copy to clipboard text.", ex);
 //					}
 				}
-			}			
-			
+			}
+
 			in.close();
 			out.close();
 		} catch (final IOException | InterruptedException exception) {
@@ -252,9 +242,9 @@ class ClientHandler implements Runnable {
 				Log.i("ClientHandler", String.format("Client connection '%s' closed.", this.socket.getRemoteSocketAddress()));
 			}
 		}
-		
+
 		this.running = false;
-		
+
 		if (frameBufferUpdater != null) {
 			frameBufferUpdater.terminate();
 		}

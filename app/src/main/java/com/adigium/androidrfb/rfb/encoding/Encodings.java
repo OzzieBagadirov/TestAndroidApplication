@@ -12,29 +12,19 @@ public class Encodings {
 			, ZLIB = 6
 			, TIGHT = 7
 			, RICH_CURSOR = -239;
-			;
 
-	private Encodings() {
+	private Encodings() { }
 	
-		// No need for instance of this class.
-	}
-	
-	/**
-	 * Create new encoder for frame buffer.
-	 * 
-	 * @param encodingType	-	one of {@link Encodings#RAW}, {@link Encodings#ZLIB} ...
-	 * 
-	 * @return	encoder instance, or null if wrong or non-existing type was provided
-	 */
+
 	public static EncodingInterface newInstance(final int encodingType) {
 		
 		if (encodingType == RAW) {
 			
 			return new RawEncoder();
 		}
-		
+
 		if (encodingType == HEXTILE) {
-			
+
 			return new HextileEncoder();
 		}
 		
@@ -47,11 +37,12 @@ public class Encodings {
 			
 			return new RichCursorEncoder();
 		}
-		
-		if (encodingType == TIGHT) {
-			
-			return new TightEncoder();
-		}
+
+		//TODO: FIX TIGHT ENCODING
+//		if (encodingType == TIGHT) {
+//
+//			return new TightEncoder();
+//		}
 		
 		return null;
 	}

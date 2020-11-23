@@ -10,20 +10,10 @@ import java.io.InputStream;
 import com.adigium.androidrfb.R;
 import com.adigium.androidrfb.rfb.service.SetPixelFormat;
 
-/**
- * This encoder will prepare information for VNC client
- * about cursor shape.
- * <p>
- * It will work only if pixel format is set to 32-bit true color.
- * <p>
- * VNC client should receive rich cursor encoded data only once per session.
- */
+
 public class RichCursorEncoder implements EncodingInterface {
 	public static Context context;
 
-	/**
-	 * Return cursor pixels and bitmask, or null value if resource files are not on class path.
-	 */
 	@Override
 	public byte[] encode(int[] image, int width, int height, SetPixelFormat pixelFormat) {
 		

@@ -1,11 +1,11 @@
-//package com.adigium.androidrfb.RFB.tight;
+//package com.adigium.androidrfb.rfb.tight;
 //
 //import java.io.ByteArrayOutputStream;
 //
-//import javax.imageio.ImageIO;
+//import javax.imageio.*;
 //
-//import com.adigium.androidrfb.RFB.image.TrueColorImage;
-//import com.adigium.androidrfb.RFB.service.SetPixelFormat;
+//import com.adigium.androidrfb.rfb.image.TrueColorImage;
+//import com.adigium.androidrfb.rfb.service.SetPixelFormat;
 //
 ///**
 // * JPEG compression method, using built-in Java JPEG library.

@@ -8,11 +8,6 @@ import java.net.Socket
 import java.net.URI
 
 class ClientWebSocket(val connectionAddress: String): WebSocketClient(URI(connectionAddress)) {
-//    var isServerVersionHandled = false
-//    var isServerSecurityHandled = false
-//    var isAuthenticationHandled = false
-//    var isClientInitHandled = false
-//    var isServerInitHandled = false
 
     override fun onOpen(handshakedata: ServerHandshake?) {
         Log.d("ClientWebSocket", "Connection opened!")

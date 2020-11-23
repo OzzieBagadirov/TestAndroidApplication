@@ -6,15 +6,7 @@ import java.io.InputStream;
 public class ClientInit {
 
 	public final boolean sharedDesktop;
-	
-	/**
-	 * Shared-flag is non-zero (true) if the server should try to share the desktop by leaving
-	 * other clients connected, zero (false) if it should give exclusive access to this client by
-	 * disconnecting all other clients.
-	 * <p>
-	 * 
-	 * @param sharedDesktop
-	 */
+
 	public ClientInit(final boolean sharedDesktop) {
 		
 		this.sharedDesktop = sharedDesktop;

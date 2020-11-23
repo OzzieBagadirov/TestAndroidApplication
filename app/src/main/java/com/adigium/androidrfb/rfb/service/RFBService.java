@@ -2,75 +2,32 @@ package com.adigium.androidrfb.rfb.service;
 
 import android.util.Log;
 
+import com.adigium.androidrfb.rfb.screen.ScreenCapture;
+import com.adigium.androidrfb.rfb.ssl.SSLUtil;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.InetAddress;
-import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
 
-import javax.net.ssl.SSLServerSocketFactory;
 import javax.net.ssl.SSLSocketFactory;
 
-import com.adigium.androidrfb.rfb.encoding.Encodings;
-import com.adigium.androidrfb.rfb.screen.ScreenCapture;
-import com.adigium.androidrfb.rfb.ssl.SSLUtil;
-import com.adigium.androidrfb.rfb.test.ClientWebSocket;
 
-/**
- * RFB service is Java implementation of VNC server.
- * <p>
- * <b>RFB</b> stands for <i>remote frame buffer</i> protocol.
- * <p>
- * This is simple implementations, mainly to demonstrate implementation of protocol.
- * It is not efficient as other implementations, nor does it compete with them.
- *
- *
- */
 public class RFBService implements Runnable {
 
     private String host;
-
     private int port;
-
     private Socket socket = null;
-
     private ClientHandler clientHandler;
-
     private final RFBConfig rfbConfig;
 
-    /**
-     * Create new instance with given TCP port value.
-     *
-     * @param port	-	TCP port on which to listen
-     */
     public RFBService(final String host, final int port) {
 
         this.host = host;
         this.port = port;
 
         this.rfbConfig = new RFBConfig();
-    }
-
-    public RFBService setHost(final String host) {
-        this.host = host;
-        return this;
-    }
-    public String getHost() {
-        return this.host;
-    }
-
-    public RFBService setPort(final int port) {
-        this.port = port;
-        return this;
-    }
-    public int getPort() {
-        return this.port;
     }
 
     public RFBService setPassword(final String pwd) {
@@ -85,19 +42,9 @@ public class RFBService implements Runnable {
 
     public void enableSSL(final String keyFilePath, final String password) {
 
-        final String keystoreType;
-
-        if (keyFilePath.endsWith(".pfx") || keyFilePath.endsWith(".p12")) {
-
-            keystoreType = SSLUtil.KEYSTORE_TYPE_PKCS12;
-        }
-        else {
-
-            keystoreType = SSLUtil.KEYSTORE_TYPE_JKS;
-        }
+        final String keystoreType = keyFilePath.endsWith(".pfx") || keyFilePath.endsWith(".p12") ? SSLUtil.KEYSTORE_TYPE_PKCS12 : SSLUtil.KEYSTORE_TYPE_JKS;
 
         try {
-
             final InputStream in = new FileInputStream(keyFilePath);
 
             final SSLSocketFactory factory = SSLUtil.newSocketInstance(keystoreType, in, password);
@@ -111,12 +58,6 @@ public class RFBService implements Runnable {
         }
     }
 
-    /**
-     * Disable SSL communication with VNC clients.
-     * <p>
-     * Note that this method should be invoked before TCP socket is already in listening mode,
-     * eg. before {@link #start} ()} method, to take effect.
-     */
     public void disableSSL() {
         this.rfbConfig.setSSLServerSocketFactory(null);
     }
@@ -155,16 +96,6 @@ public class RFBService implements Runnable {
 
                 this.socket = sslFactory != null ? sslFactory.createSocket(host, port) : new Socket(host, port);
 
-
-//                ClientWebSocket webSocket = new ClientWebSocket("ws://10.0.2.2:8080");
-//                webSocket.connect();
-//                while (this.socket == null) {
-//                    this.socket = webSocket.getSocket();
-//                    TimeUnit.MILLISECONDS.sleep(10);
-//                }
-//                webSocket.run();
-//                Log.d("RFBService", "Got the socket");
-
                 this.clientHandler = new ClientHandler(this.socket, this.rfbConfig);
 
                 final Thread clientThread = new Thread(clientHandler, "Client");
@@ -180,7 +111,6 @@ public class RFBService implements Runnable {
 
     @Override
     public String toString() {
-
         return String.format("%s-[:%d]", RFBService.class.getSimpleName(), this.port);
     }
 }

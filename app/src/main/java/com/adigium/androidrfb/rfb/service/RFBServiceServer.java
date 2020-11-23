@@ -19,16 +19,6 @@ import com.adigium.androidrfb.rfb.encoding.Encodings;
 import com.adigium.androidrfb.rfb.screen.ScreenCapture;
 import com.adigium.androidrfb.rfb.ssl.SSLUtil;
 
-/**
- * RFB service is Java implementation of VNC server.
- * <p>
- * <b>RFB</b> stands for <i>remote frame buffer</i> protocol.
- * <p>
- * This is simple implementations, mainly to demonstrate implementation of protocol.
- * It is not efficient as other implementations, nor does it compete with them.
- *  
- *
- */
 class RFBServiceServer implements Runnable {
 
 	public final static int DEFAULT_PORT = 60000;
@@ -43,18 +33,12 @@ class RFBServiceServer implements Runnable {
 	
 	private RFBConfig rfbConfig;
 	
-	/**
-	 * Create default instance, with TCP port set to {@link #DEFAULT_PORT} value.
-	 */
+
 	public RFBServiceServer() {
 		this(DEFAULT_PORT);
 	}
 	
-	/**
-	 * Create new instance with given TCP port value.
-	 * 
-	 * @param port	-	TCP port on which to listen
-	 */
+
 	public RFBServiceServer(final int port) {
 
 		this.port = port;
@@ -66,64 +50,16 @@ class RFBServiceServer implements Runnable {
 		this.rfbConfig = new RFBConfig();
 	}
 
-	/**
-	 * Set listening TCP port. Set value before {@link #start()} method is invoked.
-	 * 
-	 * @param port		-	TCP port to bind to
-	 */
-	public void setPort(final int port) {
-		
-		this.port = port;
-	}
-
-	/**
-	 * TCP port value. 
-	 * <p>
-	 * Note that this information is 
-	 * not useful to determine if RFB service has connected
-	 * to VNC client, or RFB service has bind and waits for VNC
-	 * client connection.
-	 * 
-	 * @return	TCP port value
-	 */
-	public int getPort() {
-		
-		return this.port;
-	}
-	
-	/**
-	 * If password is set, then VNC auth. is enabled. Client will be asked
-	 * to provide secret password.
-	 *  
-	 * @param pwd	-	secret password that VNC client must provide to authenticate
-	 */
 	public void setPassword(final String pwd) {
 		
 		this.rfbConfig.setPassword(pwd);
 	}
-	
-	/**
-	 * Configure a list of encodings which are preferred, instead
-	 * of list provided by VNC client.
-	 * <p>
-	 * If set to null value, then client encoding list is considered.
-	 *  
-	 * @param encodings		-	eg. {@link Encodings#ZLIB}, {@link Encodings#HEXTILE}, etc.
-	 */
+
 	public void setPreferredEncodings(final int[] encodings) {
 	
 		this.rfbConfig.setPreferredEncodings(encodings);
 	}
-	
-	/**
-	 * Enable SSL communication from provided <i>*.pfx</i> or <i>*.p12</i> file.
-	 * <p>
-	 * Note that this method should be invoked before TCP socket is already in listening mode,
-	 * eg. before {@link #start()} method, to take effect.
-	 *  
-	 * @param keyFilePath		-	path to PKCS12 key file which must contain private key and certificate
-	 * @param password			-	password protection set when key file was generated
-	 */
+
 	public void enableSSL(final String keyFilePath, final String password) {
 		
 		final String keystoreType;
@@ -152,30 +88,16 @@ class RFBServiceServer implements Runnable {
 		}
 	}
 
-	/**
-	 * Disable SSL communication with VNC clients.
-	 * <p>
-	 * Note that this method should be invoked before TCP socket is already in listening mode,
-	 * eg. before {@link #start()} method, to take effect. 
-	 */
 	public void disableSSL() {
 		
 		this.rfbConfig.setSSLServerSocketFactory(null);
 	}
-	
-	/**
-	 * Check if it's running.
-	 * 
-	 * @return	true if RFB service is running
-	 */
+
 	public boolean isRunning() {
 		
 		return this.running;
 	}
 
-	/**
-	 * Start service. This method will create new thread.
-	 */
 	public void start(int screenWidth, int screenHeight) {
 
 		ScreenCapture.screenHeight = screenHeight;
@@ -185,9 +107,7 @@ class RFBServiceServer implements Runnable {
 		thread.start();		
 	}
 
-	/**
-	 * Terminate existing RFB service thread.
-	 */
+
 	public void terminate() {
 	
 		try {
@@ -208,27 +128,12 @@ class RFBServiceServer implements Runnable {
 		}
 	}
 	
-	/**
-	 * Get list of client handlers. Note that 
-	 * this list might contain clients that were disconnected as well.
-	 * 
-	 * @return	list of {@link ClientHandler} instances
-	 */
+
 	public List<ClientHandler> getClientHandlers() {
 		
 		return new ArrayList<>(this.clientHandlers);
 	}
 
-	/**
-	 * Instead of binding to TCP port, and waiting for VNC client to connect,
-	 * it is possible to establish TCP connection to VNC client.
-	 * 
-	 * @param hostname	-	VNC client IP address, or host name
-	 * @param port		-	TCP port value on which VNC client is listening
-	 * 
-	 * @throws IOException		if VNC client is unreachable  
-	 * @throws UnknownHostException 
-	 */
 	public void connect(final String hostname, final int port) throws UnknownHostException, IOException {
 		
 		final Socket socket = new Socket(hostname, port);
@@ -293,7 +198,7 @@ class RFBServiceServer implements Runnable {
 		// Start accepting client connections.
 		//
 		
-		while (this.running == true) {
+		while (this.running) {
 			
 			try {
 			
@@ -329,7 +234,6 @@ class RFBServiceServer implements Runnable {
 	
 	@Override
 	public String toString() {
-		
 		return String.format("%s-[:%d]", RFBService.class.getSimpleName(), this.port);
 	}
 }

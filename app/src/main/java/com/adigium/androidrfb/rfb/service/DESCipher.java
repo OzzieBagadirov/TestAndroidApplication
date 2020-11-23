@@ -19,28 +19,11 @@ import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.DESKeySpec;
 
 
-/**
- * This class contains some methods to validate if VNC client sent proper DES encrypted
- * challenge response data.
- * <p>
- * Note that VNC password bits should be reversed, before use with Java DES algo.
- * <p>
- * Ref.
- *  http://www.avajava.com/tutorials/lessons/how-do-i-encrypt-and-decrypt-files-using-des.html
- */
 class DESCipher {
 
-	private DESCipher() {
-		// Don't create instance !
-	}
+	private DESCipher() { }
 	
-	/**
-	 * Perform encoding of original data.
-	 * 
-	 * @param key		-	secret key
-	 * @param in		-	input stream with orig. data
-	 * @param out		-	output stream where to write encrypted data
-	 */
+
 	public static void enc(final String key
 			, final InputStream in
 			, final OutputStream out) {
@@ -59,14 +42,7 @@ class DESCipher {
 			Log.e("DESCiphier", "DES encryption failed.", ex);
 		}
 	}
-	
-	/**
-	 * Perform decoding of DES data.
-	 * 
-	 * @param key		-	secret key
-	 * @param in		-	input stream with original encrypted data
-	 * @param out		-	output stream where to write decoded data
-	 */
+
 	public static void dec(final String key
 			, final InputStream in
 			, final OutputStream out) {
@@ -86,14 +62,7 @@ class DESCipher {
 		}
 	}
 	
-	/**
-	 * Encrypt data using DES.
-	 * 
-	 * @param key	-	secret password
-	 * @param data	-	original data
-	 * 
-	 * @return	encrypted data
-	 */
+
 	public static byte[] enc(final String key
 			, final byte[] data) {
 	
@@ -105,14 +74,7 @@ class DESCipher {
 		return bOut.toByteArray();
 	}
 	
-	/**
-	 * Perform decoding of DES data.
-	 * 
-	 * @param key		-	a password string
-	 * @param encrypted	-	encrypted data
-	 * 
-	 * @return	original data
-	 */
+
 	public static byte[] dec(final String key
 			, final byte[] encrypted) {
 	
@@ -124,23 +86,7 @@ class DESCipher {
 		return bOut.toByteArray();
 	}
 	
-	/**
-	 * Create {@link SecretKey} object for encryption.
-	 * <p>
-	 * This is special case, for VNC auth., where password string
-	 * bytes must be reversed first.
-	 * <p>
-	 * Ref.
-	 *    https://www.vidarholen.net/contents/junk/vnc.html
-	 *    
-	 * @param password			-	password string which VNC client must enter
-	 * 
-	 * @return {@link SecretKey} object
-	 * 
-	 * @throws InvalidKeyException
-	 * @throws NoSuchAlgorithmException
-	 * @throws InvalidKeySpecException
-	 */
+
 	public static SecretKey buildVNCAuthKey(final String password) throws InvalidKeyException, NoSuchAlgorithmException, InvalidKeySpecException {
 		
 		byte[] key = password.getBytes();
@@ -157,16 +103,7 @@ class DESCipher {
 		return desKey;		
 	}
 	
-	/**
-	 * Reverse bits in a byte value.
-	 * <p>
-	 * Ref.
-	 *  https://stackoverflow.com/questions/31725733/reverse-byte-in-java
-	 *  
-	 * @param b	-	input byte value
-	 * 
-	 * @return	reversed byte value
-	 */
+
     public static byte reverseByte(byte b) {
     	
         int bi = 0xFF & b, res = 0, count = 8;
@@ -178,14 +115,7 @@ class DESCipher {
         return (byte) (0xFF & res);
     }
 
-	/**
-	 * Copy bytes from {@link InputStream} to {@link OutputStream}.
-	 * 
-	 * @param in		-		input stream
-	 * @param out		-		output stream
-	 * 
-	 * @throws IOException	if IO operation fails
-	 */
+
 	public static void doCopy(final InputStream in, final OutputStream out) throws IOException {
 		
 		final byte[] bytes = new byte[64];

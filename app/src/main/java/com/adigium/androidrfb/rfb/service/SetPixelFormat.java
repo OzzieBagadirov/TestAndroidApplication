@@ -14,26 +14,6 @@ public class SetPixelFormat {
 	
 	public byte redShift, greenShift, blueShift;
 
-	/**
-	 * Create new SetPixelFormat message.
-	 * 
-	 * @param bitsPerPixel		-	bits-per-pixel is the number of bits used for each pixel value on the wire.
-	 * 								<p>
-	 * 								This must be greater than or equal to the depth which is the number of useful bits in the pixel value.
-	 * 								<p> 
-	 * 								Currently bits-per-pixel must be 8, 16 or 32.
-	 * @param depth				-	depth is the number of useful bits in the pixel value
-	 * @param bigEndianFlag		-	Big-endian-flag is non-zero (true) if multi-byte pixels are interpreted as big endian.
-	 * 								<p> 
-	 * 								Of course this is meaningless for 8 bits-per-pixel.
-	 * @param trueColorFlag		-	If true-colour-flag is non-zero (true) then the last six items specify how to extract the red, green and blue intensities from the pixel value
-	 * @param redMax			-	Red-max is the maximum red value
-	 * @param greenMax			-	Green-max is the maximum green value
-	 * @param blueMax			-	Blue-max is the maximum blue value
-	 * @param redShift			-	Red-shift is the number of shifts needed to get the red value in a pixel to the least significant bit
-	 * @param greenShift		-	Green-shift is the number of shifts needed to get the green value in a pixel to the least significant bit
-	 * @param blueShift			-	Blue-shift is the number of shifts needed to get the blue value in a pixel to the least significant bit
-	 */
 	public SetPixelFormat(byte bitsPerPixel, byte depth, byte bigEndianFlag, byte trueColorFlag, short redMax,
 			short greenMax, short blueMax, byte redShift, byte greenShift, byte blueShift) {
 
@@ -48,13 +28,10 @@ public class SetPixelFormat {
 		this.greenShift = greenShift;
 		this.blueShift = blueShift;
 	}
-	
-	/**
-	 * A default pixel format for RGB display, where red value takes most significant byte, and blue value is least significant byte.
-	 */
+
 	public SetPixelFormat() {
 		
-		this.bitsPerPixel = (byte)8;
+		this.bitsPerPixel = (byte)32;
 		this.depth = bitsPerPixel;
 		this.bigEndianFlag = 0;
 		this.trueColorFlag = 1;
@@ -66,17 +43,17 @@ public class SetPixelFormat {
 		this.redShift   = 16;
 		this.greenShift = 8;
 		this.blueShift  = 0;
-		
+
 		if (this.bitsPerPixel == 24) {
-			
+
 			/*
 			 * VNC viewers do not support color mode of 24-bits.
 			 */
-			
+
 			this.bitsPerPixel = 32;
 			this.depth = this.bitsPerPixel;
 		}
-		
+
 		if (this.bitsPerPixel == 16) {
 			
 			/*
@@ -122,15 +99,16 @@ public class SetPixelFormat {
 		setPixelFormat.depth = in.readByte();
 		setPixelFormat.bigEndianFlag = in.readByte();
 		setPixelFormat.trueColorFlag = in.readByte();
-		
+
+
 		setPixelFormat.redMax = in.readShort();
 		setPixelFormat.greenMax = in.readShort();
 		setPixelFormat.blueMax = in.readShort();
-		
-		setPixelFormat.redShift = in.readByte();
-		setPixelFormat.greenShift = in.readByte();
+
 		setPixelFormat.blueShift = in.readByte();
-		
+		setPixelFormat.greenShift = in.readByte();
+		setPixelFormat.redShift = in.readByte();
+
 		in.read(new byte[3]); // Padding.
 		
 		return setPixelFormat;

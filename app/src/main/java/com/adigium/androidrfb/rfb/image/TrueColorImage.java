@@ -7,29 +7,12 @@ import java.util.Arrays;
 import com.adigium.androidrfb.rfb.encoding.RawEncoder;
 import com.adigium.androidrfb.rfb.screen.ScreenCapture;
 
-/**
- * Stores true color (32-bit) image.
- * <p>
- * Note that here is not described byte order for a pixel.
- * When using {@link ScreenCapture} methods to capture image of screen,
- * byte order is {@link ByteOrder#LITTLE_ENDIAN}, and when encoding image
- * for VNC client, byte order should be {@link ByteOrder#BIG_ENDIAN}.
- * See {@link RawEncoder} how to switch byte order.
- * <p>
- */
 public class TrueColorImage {
 
 	public int[] raw;
 	
 	public final int width, height;
-	
-	/**
-	 * Encapsulate raw array of pixels (32-bit ARGB format) into {@link TrueColorImage} object.
-	 * 
-	 * @param raw			-	array of pixels		
-	 * @param width			-	width of image
-	 * @param height		-	height of image
-	 */
+
 	public TrueColorImage(final int[] raw, final int width, final int height) {
 	
 		this.raw = raw;
@@ -38,45 +21,6 @@ public class TrueColorImage {
 		this.height = height;
 	}
 
-	/**
-	 * Change single pixel color value.
-	 * Position (0, 0) is left, top pixel.
-	 * 
-	 * @param x			-	x position 
-	 * @param y			-	y position
-	 * @param value		-	new color value of pixel
-	 * 
-	 * @throws	IllegalArgumentException	if position is out of range
-	 */
-	public void setPixel(int x, int y, int value) {
-		
-		if (x >= width || y >= height) {
-			
-			throw new IllegalArgumentException(String.format("Pixel value out of range: (%d, %d)", x, y));
-		}
-		
-		this.raw[x + y * width] = value;
-	}
-
-	/**
-	 * Read single pixel color value.
-	 * Position (0, 0) is left, top pixel.
-	 * 
-	 * @param x			-	x position 
-	 * @param y			-	y position
-	 * @return	current color value of pixel
-	 * 
-	 * @throws	IllegalArgumentException if position is out of range
-	 */
-	public int getPixel(int x, int y) {
-		
-		if (x >= width || y >= height) {
-			
-			throw new IllegalArgumentException(String.format("Pixel value out of range: (%d, %d)", x, y));
-		}
-		
-		return this.raw[x + y * width];
-	}
 		
 	@Override
 	public int hashCode() {
@@ -133,15 +77,7 @@ public class TrueColorImage {
 //
 //		return bufferedImage;
 //	}
-//
-//	/**
-//	 * Convert {@link TrueColorImage} instance to byte array where
-//	 * pixels are in BGR order. This also reduce size from 32-bit pixel to 24-bit pixel.
-//	 *
-//	 * @param trueColorImage	-	instance of {@link TrueColorImage}
-//	 *
-//	 * @return	raw byte array
-//	 */
+
 	public TrueColorImage toBGR() {
 
 		int[] src = this.raw;

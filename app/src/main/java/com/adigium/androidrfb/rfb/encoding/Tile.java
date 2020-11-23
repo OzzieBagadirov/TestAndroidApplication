@@ -4,13 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * Holds 16x16 pixel part of image.
- * <p>
- * Contains function to divide image into 16x16 pixel tiles,
- * suitable for {@link HextileEncoder}.
- * See {@link #build(int[], int, int)} method.
- */
+
 public class Tile {
 
 	private final int[] pixels;
@@ -22,14 +16,7 @@ public class Tile {
 	
 	public final short xPos, yPos;
 	
-	/**
-	 * Provide 16x16 array of pixels.
-	 * 
-	 * @param pixels 	-	32-bit ARGB pixels
-	 * 
-	 * @param	xPos	-	x offset, position of tile, relative to source image from which tile was obtained, in pixel
-	 * @param	yPos	-	y offset, position of tile, relative to source image from which tile was obtained, in pixel
-	 */
+
 	public Tile(final int[] pixels, final short xPos, final short yPos) {
 	
 		this.pixels = pixels;
@@ -38,11 +25,7 @@ public class Tile {
 		this.yPos = yPos;
 	}
 	
-	/**
-	 * Access directly array of pixels that this tile instance holds.
-	 * 
-	 * @return	an 32-bit ARGB pixels
-	 */
+
 	public int[] raw() {
 		
 		return this.pixels;
@@ -88,15 +71,7 @@ public class Tile {
 		return String.format("%s-[%d-%d]", Tile.class.getSimpleName(), this.xPos, this.yPos);
 	}
 	
-	/**
-	 * Divide image into tiles.
-	 * 
-	 * @param image		-	raw image data, 32-bit pixels	
-	 * @param width		-	width in pixel
-	 * @param height	-	height in pixel
-	 * 
-	 * @return	list of {@link Tile}s
-	 */
+
 	public static List<Tile> build(final int[] image
 			, final int width, final int height) {
 				
@@ -106,7 +81,7 @@ public class Tile {
 		int x = 0, y = 0;
 		while (x < width && y < height) {
 		
-			final int[] tileData = new int[256]; // Use always 16x16, 
+			final int[] tileData = new int[256]; // Use always 16x16,
 													// even if bottom part of image is not divisible by 16.
 
 			final int firstLine = x + y * width;	// Offset in source image, at which pixel tile begins. 

@@ -5,16 +5,7 @@ import java.util.zip.Deflater;
 
 import com.adigium.androidrfb.rfb.service.SetPixelFormat;
 
-/**
- * Zlib is a very simple encoding that uses zlib library to compress raw pixel
- * data. This encoding achieves good compression, but consumes a lot of CPU
- * time. Support for this encoding is provided for compatibility with VNC
- * servers that might not understand Tight encoding which is more efficient than
- * Zlib in nearly all real-life situations.
- * <p>
- * This encoder is stateful, ensure that each RFB connection with VNC client,
- * has its own instance of this encoder.
- */
+
 public class ZlibEncoder implements EncodingInterface {
 
 	final private Deflater deflater;

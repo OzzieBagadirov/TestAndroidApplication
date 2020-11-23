@@ -38,8 +38,6 @@ public class ScreenCapture {
 				FramebufferUpdater.imageReady = 0;
 				image = imageReader.acquireLatestImage();
 
-//				Log.d("ScreenCapture","Image Format: " + image.getFormat());
-//				Log.d("ImageReader", "Image taken. Images now: " + FramebufferUpdater.imageReady);
 				if (image != null) {
 					width = image.getWidth();
 					height = image.getHeight();
@@ -63,6 +61,6 @@ public class ScreenCapture {
 		}
 
 		//TODO: MAKE BYTE ORDER TEMPLATES AND SYNC WITH CLIENT
-		return new TrueColorImage(arrayBuffer, width, height);//.toBGR();
+		return new TrueColorImage(arrayBuffer, width, height);
 	}
 }

@@ -1,29 +1,11 @@
 package com.adigium.androidrfb.rfb.encoding;
 
-import java.nio.ByteOrder;
-
-import com.adigium.androidrfb.rfb.screen.ScreenCapture;
 import com.adigium.androidrfb.rfb.service.SetPixelFormat;
 
-/**
- * Helper class to transform pixel from source image of screen
- * into suitable format advertised by VNC client.
- * <p>
- * Note that source image is usually 32-bit ARGB image with
- * little-endian byte order ({@link ByteOrder#LITTLE_ENDIAN}).
- * <p>
- */
+
 public class PixelTransform {
 
-	/**
-	 * Convert given 32-bit pixel into suitable pixel (8-bit, 16-bit, or 32-bit)
-	 * according to given pixel format argument.
-	 * 
-	 * @param pixel			-		pixel, as obtained from {@link ScreenCapture} image source
-	 * @param pixelFormat	-		format as received from VNC client, see {@link SetPixelFormat} message
-	 * 
-	 * @return	new pixel value, transformed
-	 */
+
 	public static int transform(final int pixel,
 			final SetPixelFormat pixelFormat) {
 		
